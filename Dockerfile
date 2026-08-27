@@ -9,8 +9,11 @@ RUN apt-get update \
 COPY . .
 
 RUN pip install --no-cache-dir . \
-    && npm --prefix web install \
-    && npm --prefix web run build
+    && if [ -f web/package.json ]; then \
+        npm --prefix web install \
+        && npm --prefix web run build \
+        && python -c 'import shutil, sysconfig; from pathlib import Path; source = Path("web/dist"); target = Path(sysconfig.get_path("purelib")) / "web" / "dist"; target.parent.mkdir(parents=True, exist_ok=True); shutil.copytree(source, target, dirs_exist_ok=True)'; \
+    fi
 
 ENV TRACESPEC_DB_PATH=/data/tracespec.db
 
