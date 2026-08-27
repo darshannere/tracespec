@@ -2,6 +2,8 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+import httpx
+
 from .models import Session, Span, SpanType
 from .otlp_receiver import MODEL_PRICES
 
@@ -127,3 +129,24 @@ def import_langfuse_file(path: str, agent_name: str | None = None) -> list[Sessi
     except json.JSONDecodeError:
         traces = [json.loads(line) for line in text.splitlines() if line.strip()]
     return [normalize_langfuse_trace(trace, agent_name) for trace in traces]
+
+
+def import_langfuse_api(
+    base_url: str,
+    public_key: str,
+    secret_key: str,
+    agent_name: str | None = None,
+) -> list[Session]:
+    sessions = []
+    page = 1
+    limit = 50
+    url = f"{base_url.rstrip('/')}/api/public/traces"
+    while True:
+        response = httpx.get(url, params={"page": page, "limit": limit}, auth=(public_key, secret_key))
+        response.raise_for_status()
+        payload = response.json()
+        traces = payload if isinstance(payload, list) else payload.get("data", [])
+        sessions.extend(normalize_langfuse_trace(trace, agent_name) for trace in traces)
+        if len(traces) < limit:
+            return sessions
+        page += 1
