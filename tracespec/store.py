@@ -115,7 +115,7 @@ def init_db(path: str) -> sqlite3.Connection:
     return conn
 
 
-def upsert_session(conn: sqlite3.Connection, session: Session) -> None:
+def upsert_session(conn: sqlite3.Connection, session: Session, commit: bool = True) -> None:
     conn.execute(
         """INSERT INTO sessions(trace_id, agent_name, provider, started_at, verdict, spans_json)
            VALUES (?, ?, ?, ?, ?, ?)
@@ -125,7 +125,8 @@ def upsert_session(conn: sqlite3.Connection, session: Session) -> None:
         (session.trace_id, session.agent_name, session.provider, session.started_at,
          session.verdict, _json([_span_dict(span) for span in session.spans])),
     )
-    conn.commit()
+    if commit:
+        conn.commit()
 
 
 def list_sessions(conn: sqlite3.Connection, agent_name: str | None = None, limit: int = 100) -> list[Session]:

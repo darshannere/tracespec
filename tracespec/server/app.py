@@ -9,6 +9,8 @@ from .api import create_router
 
 
 def create_app(db_path: str) -> FastAPI:
+    if db_path == ":memory:":
+        raise ValueError("in-memory databases are not supported by create_app")
     init_db(db_path).close()
     app = FastAPI()
     app.include_router(create_router(db_path))
