@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { listTraces } from '../api'
 
 function formatDate(value) {
@@ -25,22 +25,29 @@ export default function TraceList() {
   const [status, setStatus] = useState('loading')
   const [error, setError] = useState('')
   const [agent, setAgent] = useState('')
+  const requestSequence = useRef(0)
 
   function loadTraces() {
+    const sequence = ++requestSequence.current
     setStatus('loading')
     setError('')
     listTraces({ agent })
       .then((data) => {
+        if (sequence !== requestSequence.current) return
         setTraces(data)
         setStatus('ready')
       })
       .catch((reason) => {
+        if (sequence !== requestSequence.current) return
         setError(reason.message)
         setStatus('error')
       })
   }
 
-  useEffect(() => { loadTraces() }, [])
+  useEffect(() => {
+    loadTraces()
+    return () => { requestSequence.current += 1 }
+  }, [])
 
   function submitFilter(event) {
     event.preventDefault()
@@ -66,7 +73,7 @@ export default function TraceList() {
         <button className="button button-amber" type="submit">Filter traces</button>
       </form>
 
-      {status === 'loading' && <div className="state-card" role="status"><span className="loader" aria-hidden="true" />Reading trace register...</div>}
+      {status === 'loading' && <div className="state-card" role="status"><span className="loader" aria-hidden="true" />Reading trace register…</div>}
       {status === 'error' && <ErrorState message={error} onRetry={loadTraces} />}
       {status === 'ready' && traces.length === 0 && (
         <div className="state-card empty-state">

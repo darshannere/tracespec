@@ -57,14 +57,24 @@ export default function TraceView({ traceId }) {
   const [error, setError] = useState('')
 
   useEffect(() => {
+    let active = true
     setStatus('loading')
     setError('')
     getTrace(traceId)
-      .then((data) => { setTrace(data); setStatus('ready') })
-      .catch((reason) => { setError(reason.message); setStatus('error') })
+      .then((data) => {
+        if (!active) return
+        setTrace(data)
+        setStatus('ready')
+      })
+      .catch((reason) => {
+        if (!active) return
+        setError(reason.message)
+        setStatus('error')
+      })
+    return () => { active = false }
   }, [traceId])
 
-  if (status === 'loading') return <section className="page-section"><div className="state-card" role="status"><span className="loader" aria-hidden="true" />Loading trace detail...</div></section>
+  if (status === 'loading') return <section className="page-section"><div className="state-card" role="status"><span className="loader" aria-hidden="true" />Loading trace detail…</div></section>
   if (status === 'error') return <section className="page-section"><ErrorState message={error} /></section>
 
   const root = trace.spans

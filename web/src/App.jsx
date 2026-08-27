@@ -15,6 +15,14 @@ function currentRoute() {
   return window.location.hash.replace(/^#\/?/, '') || 'traces'
 }
 
+function decodeTraceId(route) {
+  try {
+    return decodeURIComponent(route.slice('traces/'.length))
+  } catch {
+    return route.slice('traces/'.length)
+  }
+}
+
 function useRoute() {
   const [route, setRoute] = useState(currentRoute)
 
@@ -43,7 +51,7 @@ function App() {
   const [apiOnline, setApiOnline] = useState(null)
   const isTraceDetail = route.startsWith('traces/')
   const activeTab = isTraceDetail ? 'traces' : route.split('/')[0]
-  const selectedTraceId = isTraceDetail ? decodeURIComponent(route.slice('traces/'.length)) : null
+  const selectedTraceId = isTraceDetail ? decodeTraceId(route) : null
 
   useEffect(() => {
     let active = true
@@ -62,6 +70,7 @@ function App() {
 
   return (
     <div className="app-shell">
+      <a className="skip-link" href="#main-content">Skip to main content</a>
       <aside className="sidebar">
         <a className="brand" href="#/traces" aria-label="TraceSpec home">
           <span className="brand-glyph" aria-hidden="true">TS</span>
@@ -86,7 +95,7 @@ function App() {
         </div>
       </aside>
 
-      <main className="main-content">
+      <main className="main-content" id="main-content" tabIndex="-1">
         <header className="topbar">
           <div>
             <p className="breadcrumb">TRACESPEC <span>/</span> {isTraceDetail ? 'TRACE VIEW' : activeTab.toUpperCase()}</p>

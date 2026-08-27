@@ -22,6 +22,9 @@ body { margin: 0; min-width: 320px; background: var(--ink); }
 button, input { font: inherit; }
 a { color: inherit; }
 
+.skip-link { position: fixed; top: 12px; left: 12px; z-index: 10; padding: 9px 12px; color: var(--ink); background: var(--amber); transform: translateY(-160%); transition: transform .15s; font: 700 10px "SFMono-Regular", Consolas, monospace; letter-spacing: .08em; text-decoration: none; text-transform: uppercase; }
+.skip-link:focus-visible { transform: translateY(0); }
+
 .app-shell { min-height: 100vh; display: grid; grid-template-columns: 250px minmax(0, 1fr); background: radial-gradient(circle at 88% 0%, #203136 0, transparent 32rem), var(--ink); }
 .sidebar { display: flex; flex-direction: column; min-height: 100vh; padding: 32px 25px 24px; border-right: 1px solid var(--line); background: linear-gradient(180deg, rgba(24, 29, 33, .96), rgba(15, 18, 20, .96)); }
 .brand { display: flex; gap: 12px; align-items: center; text-decoration: none; }
@@ -58,7 +61,8 @@ h2 { font-size: 27px; line-height: 1.1; font-weight: 500; }
 .heading-count strong { color: var(--amber); font: 32px Georgia, "Times New Roman", serif; letter-spacing: -.05em; }
 .filter-bar { display: flex; align-items: center; gap: 13px; margin: 42px 0 18px; padding: 12px 14px; border: 1px solid var(--line); background: rgba(27, 32, 36, .8); }
 .filter-bar label { color: var(--muted); font: 10px "SFMono-Regular", Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; }
-.filter-bar input { flex: 1; min-width: 0; border: 0; outline: 0; color: var(--paper); background: transparent; font-size: 14px; }
+.filter-bar input { flex: 1; min-width: 0; border: 0; color: var(--paper); background: transparent; font-size: 14px; }
+.filter-bar input:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
 .filter-bar input::placeholder { color: #5e696d; }
 .button { display: inline-block; border: 0; padding: 10px 14px; cursor: pointer; text-decoration: none; font: 700 10px "SFMono-Regular", Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; }
 .button-amber { color: var(--ink); background: var(--amber); }
@@ -89,6 +93,7 @@ h2 { font-size: 27px; line-height: 1.1; font-weight: 500; }
 .empty-state { background: linear-gradient(120deg, rgba(241, 178, 74, .04), transparent); }
 .loader { width: 18px; height: 18px; border: 2px solid var(--line); border-top-color: var(--cyan); border-radius: 50%; animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .loader { animation: none; } }
 
 .back-link { display: inline-block; margin-bottom: 30px; color: var(--muted); font: 11px "SFMono-Regular", Consolas, monospace; text-decoration: none; }
 .back-link:hover { color: var(--cyan); }
