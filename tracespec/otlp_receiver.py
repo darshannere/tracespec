@@ -42,9 +42,12 @@ def _attr(record: dict, attrs: dict, *keys: str):
 
 def _number(value, default: int = 0) -> int:
     try:
-        return int(float(value))
+        return int(value)
     except (TypeError, ValueError):
-        return default
+        try:
+            return int(float(value))
+        except (TypeError, ValueError):
+            return default
 
 
 def _epoch_ms(value) -> int:
@@ -133,7 +136,8 @@ def map_json_span(record: dict) -> Span:
         "exception.message",
     )
     if error is None and status_code not in (None, "OK", "STATUS_CODE_OK", 0, 1, "0", "1"):
-        error = status.get("message") if isinstance(status, dict) else str(status_code)
+        error = status.get("message") if isinstance(status, dict) else None
+        error = error or str(status_code)
 
     trace_id = _attr(record, attrs, "trace_id", "traceId", "gen_ai.conversation.id", "trace.trace_id")
     span_id = _attr(record, attrs, "span_id", "spanId", "id")

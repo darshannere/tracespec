@@ -54,3 +54,25 @@ def test_dialect_detection_and_canonical_mapping():
     assert span.attrs["tokens_out"] == 40
     assert span.attrs["latency_ms"] == 500
     assert span.start_ms == 1722470400100
+
+
+def test_status_error_without_message_is_preserved():
+    span = map_json_span({"span_id": "failed", "name": "failed", "status": {"code": "ERROR"}})
+
+    assert span.error == "ERROR"
+
+
+def test_nanosecond_timestamps_preserve_millisecond_precision():
+    start_ns = 1_722_470_400_001_000_000
+    span = map_json_span(
+        {
+            "span_id": "timed",
+            "name": "timed",
+            "start_time_unix_nano": start_ns,
+            "end_time_unix_nano": start_ns + 2_000_000,
+        }
+    )
+
+    assert span.start_ms == 1_722_470_400_001
+    assert span.end_ms == 1_722_470_400_003
+    assert span.attrs["latency_ms"] == 2
