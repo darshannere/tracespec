@@ -1,0 +1,13 @@
+services:
+  tracespec:
+    build: .
+    ports: ["8080:8080"]
+    environment:
+      - TRACESPEC_DB_PATH=/data/tracespec.db
+      - TRACESPEC_LLM_BASE_URL=${TRACESPEC_LLM_BASE_URL:-}
+      - TRACESPEC_LLM_MODEL=${TRACESPEC_LLM_MODEL:-}
+      - TRACESPEC_LLM_API_KEY=${TRACESPEC_LLM_API_KEY:-}
+    volumes:
+      - tracespec-data:/data
+volumes:
+  tracespec-data:
