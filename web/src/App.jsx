@@ -23,6 +23,11 @@ function decodeTraceId(route) {
   }
 }
 
+function skipToMain(event) {
+  event.preventDefault()
+  document.getElementById('main-content')?.focus()
+}
+
 function useRoute() {
   const [route, setRoute] = useState(currentRoute)
 
@@ -70,7 +75,7 @@ function App() {
 
   return (
     <div className="app-shell">
-      <a className="skip-link" href="#main-content">Skip to main content</a>
+      <a className="skip-link" href="#main-content" onClick={skipToMain}>Skip to main content</a>
       <aside className="sidebar">
         <a className="brand" href="#/traces" aria-label="TraceSpec home">
           <span className="brand-glyph" aria-hidden="true">TS</span>
